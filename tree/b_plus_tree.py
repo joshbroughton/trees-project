@@ -9,12 +9,13 @@ class BPlusTree:
     tree of any order. Supports Inserts, Deletions, and Searches.
 
     Definitions of B+ trees vary, for this one: Root and internal nodes
-    contain keys for the index, and pointers to child nodes. Each leaf node contains a pointer
+    contain unique primary keys for the index, and pointers to child nodes. Each leaf node contains a pointer
     to a record that store the actual data. The leaf nodes are singly linked to eachother for range
     searches.
     '''
-    def __init__(self, order, root_key):
+    def __init__(self, order, root_key, root_value):
         self.root = Node.new(order, root_key)
+        self.data = { root_key: root_value }
         self.order = order
 
     def insert(self, key):
@@ -23,6 +24,8 @@ class BPlusTree:
         node, else shifts keys into siblings, else if both siblings are full creates
         a new internal node
         '''
+        # inserting when a new internal node is needed
+
 
     def delete(self, key):
         '''
@@ -33,8 +36,7 @@ class BPlusTree:
 
     def search(self, key):
         '''
-        Search for a record with the given key and return it, else return null.
-        Returns the data stored in the leaf node
+        Returns the record for the given key
         Like doing SELECT * FROM table WHERE key=key
         '''
 
@@ -42,6 +44,12 @@ class BPlusTree:
         '''
         Search for and return all records within a given key range (include)
         Like doing SELECT * FROM table WHERE key BETWEEN start_key AND end_key
+        '''
+
+    def _search_key(self, key):
+        '''
+        Search for a leaf node with the given key and return it, else return null.
+
         '''
 
 
