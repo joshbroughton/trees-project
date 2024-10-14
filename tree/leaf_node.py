@@ -11,6 +11,17 @@ class LeafNode:
     nodes store both the index value and all primary keys with that value to facilitate lookup of
     non-unique values
     '''
-    def __init__(self, key, next=None):
-        self.key = key
+    def __init__(self, order, value, key, next=None):
+        self.length = 2 * order
+        self.data = { value: [key] }
+        self.values = self.data.keys
         self.next = next
+
+    def add_value(self, value, key):
+        if len(self.values) == self.length:
+            return False
+        elif self.data[value]:
+            self.data[value].append(key)
+        else:
+            self.data[value] = [key]
+        return True
