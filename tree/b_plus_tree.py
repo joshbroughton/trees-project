@@ -1,6 +1,6 @@
 #!python3
 
-from node import Node
+from inner_node import InnerNode
 from leaf_node import LeafNode
 
 class BPlusTree:
@@ -15,9 +15,8 @@ class BPlusTree:
     and a list of associated primary keys for the value. The leaf nodes are singly linked to eachother for range
     searches.
     '''
-    def __init__(self, order, root_key, root_value):
-        self.root = LeafNode.new(order, root_key, root_value)
-        self.data = { root_key: root_value }
+    def __init__(self, order, primary_key, root_value):
+        self.root = LeafNode(order, {root_value: [primary_key]})
         self.order = order
 
     def insert(self, value, key):
@@ -26,26 +25,11 @@ class BPlusTree:
         node, else shifts keys into siblings, else if both siblings are full creates
         a new internal node
         '''
-        # first insertion
-        if type(self.root) is LeafNode:
-            new_node = Node.new(self.order, value)
-            self.root.add_value(value, key)
-            new_node.add_child(self.root)
-            self.root = new_node
-
-        # if a leaf node with this value exists
+        # if a leaf node for this value exists
+        print('inserting')
         search_result = self._search_value(value, self.root)
         if search_result is not None:
-            insert_result = search_result.add_value(value, key)
-            # insert successful; value exists or node has room
-            if insert_result is True:
-                return True
-            # not successful; we need to split the leaf node
-            else
-
-
-
-
+            search_result.add_value(value, key, self)
 
     def delete(self, key):
         '''
@@ -66,14 +50,22 @@ class BPlusTree:
         Like doing SELECT * FROM table WHERE key BETWEEN start_key AND end_key
         '''
 
+    def make_root(self, node):
+        '''
+        Makes node the root of the tree
+        '''
+        self.root = node
+
     def _search_value(self, value, node):
         '''
-        Search for a leaf node where the given index value should be stored and return it, else return None.
+        Search for a leaf node where the given index value should be stored and return it
         '''
         if type(node) is LeafNode:
             return node
         else:
-            return self._search_value(node.get_child(value))
+            return self._search_value(value, node.get_child(value))
+
+
 
 
 
