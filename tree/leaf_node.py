@@ -28,7 +28,6 @@ class LeafNode:
             self.data[value].append(key)
         else:
             self.data[value] = [key]
-        print(len(self.values()))
         if len(self.values()) > self.length:
             self.split_node(tree)
 
@@ -37,7 +36,6 @@ class LeafNode:
         Splits the node into two. Updates the current node in place, then adds a new node
         with half the values to the parent. The parent will handle splitting itself if needed.
         '''
-        print('splitting leaf node')
         split_index = self.length // 2
         # there's enough going on here that I'm gonna let the built in handle this
         items = sorted(self.data.items())
@@ -48,8 +46,7 @@ class LeafNode:
         new_node = LeafNode(self.order, data2, self.parent, self.next)
         self.next = new_node
         if self.parent is None:
-            print(self.values()[0])
-            self.parent = InnerNode(self.order, self.values()[0])
+            self.parent = InnerNode(self.order, [self.values()[0]])
             new_node.parent = self.parent
             self.parent.add_child(self)
             self.parent.add_child(new_node)

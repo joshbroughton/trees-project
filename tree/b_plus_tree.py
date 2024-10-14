@@ -26,10 +26,12 @@ class BPlusTree:
         a new internal node
         '''
         # if a leaf node for this value exists
-        print('inserting')
         search_result = self._search_value(value, self.root)
         if search_result is not None:
             search_result.add_value(value, key, self)
+
+        if self.root.parent is not None:
+            self.root = self.root.parent
 
     def delete(self, key):
         '''
