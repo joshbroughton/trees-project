@@ -56,7 +56,7 @@ class BPlusTreeTest(unittest.TestCase):
 
     def test_split_leaf_node_root_exists(self):
         '''
-        Test inserting a new value into the tree that causes a leaf node split when the root is an inner node
+        Test inserting a new value into the tree that causes a leaf node split
         '''
         tree = BPlusTree(1, 1, 'jim')
         tree.insert('bob', 2)
@@ -70,9 +70,9 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(tree.root.children[1].next, tree.root.children[2])
         self.assertEqual(tree.root.children[2].next, None)
 
-    def test_split_inner_node(self):
+    def test_split_root_node(self):
         '''
-        Test inserting a new value into the tree that causes an inner node split
+        Test inserting a new value into the tree that causes a root split
         '''
         tree = BPlusTree(1, 1, 'jim')
         tree.insert('bob', 2)
@@ -84,11 +84,39 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(tree.root.children[0].values(), ['bob'])
         self.assertEqual(tree.root.children[1].values(), ['jill'])
         self.assertEqual(tree.root.children[0].children[0].data, {'bob': [2]})
-        print(tree.root.children[0].children[0].next.data)
-        print(tree.root.children[0].children)
         self.assertEqual(tree.root.children[0].children[0].next, tree.root.children[0].children[1])
+        self.assertEqual(tree.root.children[0].children[1].data, {'jackie': [6]})
+        self.assertEqual(tree.root.children[0].children[1].next, tree.root.children[1].children[0])
+        self.assertEqual(tree.root.children[1].children[0].data, {'jane': [5], 'jill': [4]})
+        self.assertEqual(tree.root.children[1].children[0].next, tree.root.children[1].children[1])
+        self.assertEqual(tree.root.children[1].children[1].data, {'jim': [1], 'joe': [3]})
+        self.assertEqual(tree.root.children[0].children[0].parent, tree.root.children[0])
+        self.assertEqual(tree.root.children[0].children[1].parent, tree.root.children[0])
+        self.assertEqual(tree.root.children[1].children[0].parent, tree.root.children[1])
+        self.assertEqual(tree.root.children[1].children[1].parent, tree.root.children[1])
 
-
-
+    def test_split_inner_node(self):
+        '''
+        Test inserting a new value into the tree that causes an inner node split
+        '''
+        tree = BPlusTree(1, 1, 'jim')
+        tree.insert('bob', 2)
+        tree.insert('joe', 3)
+        tree.insert('jill', 4)
+        tree.insert('jane', 5)
+        tree.insert('jackie', 6)
+        tree.insert('jimmy', 7)
+        self.assertEqual(tree.root.children[1].values(), ['jill', 'jim'])
+        tree.insert('rick', 8)
+        self.assertEqual(tree.root.values(), ['jackie', 'jim'])
+        self.assertEqual(tree.root.children[0].values(), ['bob'])
+        self.assertEqual(tree.root.children[1].values(), ['jill'])
+        self.assertEqual(tree.root.children[2].values(), ['jimmy'])
+        self.assertEqual(tree.root.children[0].children[0].data, {'bob': [2]})
+        self.assertEqual(tree.root.children[0].children[1].data, {'jackie': [6]})
+        self.assertEqual(tree.root.children[1].children[0].data, {'jane': [5], 'jill': [4]})
+        self.assertEqual(tree.root.children[1].children[1].data, {'jim': [1]})
+        self.assertEqual(tree.root.children[2].children[0].data, {'jimmy': [7]})
+        self.assertEqual(tree.root.children[2].children[1].data, {'joe': [3], 'rick': [8]})
 
 

@@ -20,6 +20,9 @@ class LeafNode:
         self.next = next
         self.order = order
 
+    def __str__(self):
+        return str(self.data)
+
     def values(self):
         return sorted(self.data.keys())
 

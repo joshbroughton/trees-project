@@ -18,6 +18,19 @@ class BPlusTree:
     def __init__(self, order, primary_key, root_value):
         self.root = LeafNode(order, {root_value: [primary_key]})
         self.order = order
+        self.start = self.root
+
+    def __str__(self):
+        '''
+        Build a string representation of the tree using a breadth first traversal
+        '''
+        result = ''
+        node = self.start
+        while node is not None:
+            result += str(node) + ' -> '
+            node = node.next
+
+        return result
 
     def insert(self, value, key):
         '''
@@ -25,11 +38,11 @@ class BPlusTree:
         node, else shifts keys into siblings, else if both siblings are full creates
         a new internal node
         '''
-        # if a leaf node for this value exists
+        # find the node to insert the value into
         search_result = self._search_value(value, self.root)
         if search_result is not None:
             search_result.add_value(value, key, self)
-
+        # update the root if it has changed
         if self.root.parent is not None:
             self.root = self.root.parent
 

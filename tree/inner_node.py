@@ -8,7 +8,6 @@ class InnerNode:
         self.children = []
         self.order = order
 
-
     def values(self):
         return self.list_values
 
@@ -50,24 +49,28 @@ class InnerNode:
             if new_value <= value:
                 self.list_values.insert(index, new_value)
                 return
-
         self.list_values.append(new_value)
 
     def split_node(self):
         '''
         Splits this inner node into two, shares children between them, updates parent pointers
         '''
-        divider = (len(self.list_values) // 2) + 1
-        middle_value = self.list_values[divider - 1]
+        divider = len(self.list_values) // 2
+        middle_value = self.list_values.pop(divider)
 
         if self.parent is None:
-            self.parent = InnerNode(self.order, [middle_value])
+            self.parent = InnerNode(self.order, [])
+            self.parent.add_child(self)
 
-        new_node = InnerNode(self.order, self.list_values[(divider):], self.parent)
-        self.list_values = self.list_values[:(divider - 1)]
-        new_node.children = self.children[divider:]
-        self.children = self.children[:(divider - 1)]
-        self.parent.add_child(self)
+        new_node = InnerNode(self.order, self.list_values[divider:], self.parent)
+        self.list_values = self.list_values[:(divider)]
+
+        new_node.children = self.children[(divider+1):]
+        for child in new_node.children:
+            child.parent = new_node
+        self.children = self.children[:(divider+1)]
+
+        self.parent.add_value(middle_value)
         self.parent.add_child(new_node)
 
 
