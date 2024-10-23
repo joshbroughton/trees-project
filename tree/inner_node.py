@@ -73,4 +73,40 @@ class InnerNode:
         self.parent.add_value(middle_value)
         self.parent.add_child(new_node)
 
+    def balance_child(self, child):
+        '''
+        Balance a child node that is in an underflow state
+        '''
+        children_length = len(self.children)
+        # if this is the only child what do we do?
+        if children_length == 1:
+            #something?
+            return
+
+        # get the siblings
+        index = self.children.index(child)
+        left_sibling = self.children[index - 1] if index >=1 else None
+        right_sibling = self.children[index + 1] if index < children_length - 1 else None
+
+        # try and transfer from the siblings
+        if left_sibling and left_sibling.can_transfer():
+            value, keys = left_sibling.right_value()
+            child.add_leaf_entry(value, keys)
+            left_sibling.delete_leaf_entry(value)
+            self.list_values[index - 1] = left_sibling.right_value()[0]
+        elif right_sibling and right_sibling.can_transfer():
+            value, keys = right_sibling.left_value()
+            child.add_leaf_entry(value, keys)
+            right_sibling.delete_leaf_entry(value)
+            self.list_values[index] = value
+        # past this point its becuase we can't transfer, so we merge, trying for a left sibling first
+        elif left_sibling:
+            left_sibling.merge_node(child)
+            left_sibling.next = child.next
+            self.list_values.pop(index - 1)
+            self.children.pop(index)
+        elif right_sibling:
+            right_sibling.merge_node(child)
+            self.list_values.pop(index)
+            self.children.pop(index)
 

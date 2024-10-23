@@ -27,6 +27,20 @@ class BPlusTreeTest(unittest.TestCase):
         tree.insert('bob', 2)
         self.assertEqual(tree.root.data,{'jim': [1], 'bob': [2]})
 
+    def test_create_and_insert_higher_order(self):
+        '''
+        Test creating a tree with a higher order and building it up
+        '''
+        tree = BPlusTree(2, 1, 'jim')
+        tree.insert('bob', 2)
+        tree.insert('joe', 3)
+        tree.insert('jill', 4)
+        self.assertEqual(tree.root.data, {'jim': [1], 'bob': [2], 'joe': [3], 'jill': [4]})
+        tree.insert('jane', 5)
+        self.assertEqual(tree.root.values(), ['jane'])
+        self.assertEqual(tree.root.children[0].data, {'bob': [2], 'jane': [5]})
+        self.assertEqual(tree.root.children[1].data, {'jim': [1], 'joe': [3], 'jill': [4]})
+
     def test_split_leaf_node_create_root(self):
         '''
         Test inserting a new value into the tree that causes a leaf node split when the root is a leaf node
@@ -119,4 +133,87 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(tree.root.children[2].children[0].data, {'jimmy': [7]})
         self.assertEqual(tree.root.children[2].children[1].data, {'joe': [3], 'rick': [8]})
 
+    def test_delete_value_no_underflow(self):
+        '''
+        Test deleting a value from the tree that doesn't cause an underflow
+        '''
+        tree = BPlusTree(1, 1, 'jim')
+        tree.insert('bob', 2)
+        tree.insert('joe', 3)
+        tree.delete('joe', 3)
+        self.assertEqual(tree.root.values(), ['bob'])
+        self.assertEqual(tree.root.children[0].data, {'bob': [2]})
+        self.assertEqual(tree.root.children[1].data, {'jim': [1]})
+
+    def test_delete_value_with_underflow_left_sibling(self):
+        '''
+        Test deleting a value from the tree that causes an underflow and the left sibling can transfer
+        '''
+        tree = BPlusTree(1, 1, 'jim')
+        tree.insert('bob', 2)
+        tree.insert('joe', 3)
+        tree.insert('abe', 4)
+        tree.insert('jill', 5)
+        tree.delete('jill', 5)
+        # the pointer values just need to point correctly, its okay if they contain deleted values
+        self.assertEqual(tree.root.values(), ['abe', 'jill'])
+        self.assertEqual(tree.root.children[0].data, {'abe': [4]})
+        self.assertEqual(tree.root.children[1].data, {'bob': [2]})
+        self.assertEqual(tree.root.children[2].data, {'jim': [1], 'joe': [3]})
+
+    def test_delete_value_with_underflow_right_sibling(self):
+        '''
+        Test deleting a value from the tree that causes an underflow and the right sibling can transfer
+        '''
+        tree = BPlusTree(1, 1, 'jim')
+        tree.insert('bob', 2)
+        tree.insert('joe', 3)
+        tree.insert('jill', 5)
+        tree.delete('jill', 5)
+        self.assertEqual(tree.root.values(), ['bob', 'jim'])
+        self.assertEqual(tree.root.children[0].data, {'bob': [2]})
+        self.assertEqual(tree.root.children[1].data, {'jim': [1]})
+        self.assertEqual(tree.root.children[2].data, {'joe': [3]})
+
+    def test_delete_value_with_underflow_merge_left(self):
+        '''
+        Test deleting a value from the tree that causes an underflow and merge with left sibling
+        '''
+        tree = BPlusTree(2, 1, 'jim')
+        tree.insert('bob', 2)
+        tree.insert('joe', 3)
+        tree.insert('jill', 4)
+        tree.insert('jane', 5)
+        tree.insert('rob', 6)
+        tree.insert('rick', 7)
+        self.assertEqual(tree.root.values(), ['jane','jim'])
+        self.assertEqual(tree.root.children[0].data, {'bob': [2], 'jane': [5]})
+        self.assertEqual(tree.root.children[1].data, {'jill': [4], 'jim': [1]})
+        self.assertEqual(tree.root.children[2].data, {'joe': [3], 'rick': [7], 'rob': [6]})
+        tree.delete('rob', 6)
+        tree.delete('jim', 1)
+        self.assertEqual(tree.root.values(), ['jim'])
+        self.assertEqual(tree.root.children[0].data, {'bob': [2], 'jane': [5], 'jill': [4]})
+        self.assertEqual(tree.root.children[1].data, {'joe': [3], 'rick': [7]})
+
+    def test_delete_value_with_underflow_merge_right(self):
+        '''
+
+        Test deleting a value from the tree that causes an underflow and merge with right sibling
+        '''
+        tree = BPlusTree(2, 1, 'jim')
+        tree.insert('bob', 2)
+        tree.insert('joe', 3)
+        tree.insert('jill', 4)
+        tree.insert('jane', 5)
+        tree.insert('rob', 6)
+        tree.insert('rick', 7)
+        self.assertEqual(tree.root.values(), ['jane','jim'])
+        self.assertEqual(tree.root.children[0].data, {'bob': [2], 'jane': [5]})
+        self.assertEqual(tree.root.children[1].data, {'jill': [4], 'jim': [1]})
+        self.assertEqual(tree.root.children[2].data, {'joe': [3], 'rick': [7], 'rob': [6]})
+        tree.delete('bob', 2)
+        self.assertEqual(tree.root.values(), ['jim'])
+        self.assertEqual(tree.root.children[0].data, {'jane': [5], 'jill': [4], 'jim': [1]})
+        self.assertEqual(tree.root.children[1].data, {'joe': [3], 'rick': [7], 'rob': [6]})
 

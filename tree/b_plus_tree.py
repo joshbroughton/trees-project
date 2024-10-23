@@ -16,7 +16,7 @@ class BPlusTree:
     searches.
     '''
     def __init__(self, order, primary_key, root_value):
-        self.root = LeafNode(order, {root_value: [primary_key]})
+        self.root = LeafNode(order, {root_value: [primary_key]}, self)
         self.order = order
         self.start = self.root
 
@@ -41,17 +41,20 @@ class BPlusTree:
         # find the node to insert the value into
         search_result = self._search_value(value, self.root)
         if search_result is not None:
-            search_result.add_value(value, key, self)
+            search_result.add_value(value, key)
         # update the root if it has changed
         if self.root.parent is not None:
             self.root = self.root.parent
 
-    def delete(self, key):
+    def delete(self, value, key):
         '''
         Deletes the record with the given key from the tree. If deleting that key from the leaf
         node that contains it makes that node violate the tree rules, rebalance the tree starting from
         that node as needed
         '''
+        search_result = self._search_value(value, self.root)
+        if search_result is not None:
+            search_result.delete_value(value, key)
 
     def search(self, key):
         '''
