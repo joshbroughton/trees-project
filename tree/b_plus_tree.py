@@ -46,6 +46,15 @@ class BPlusTree:
         if self.root.parent is not None:
             self.root = self.root.parent
 
+    def insert_many(self, values, keys=None):
+        '''
+        Insert multiple values into the tree
+        '''
+        if keys is None:
+            keys = values
+        for index, value in enumerate(values):
+            self.insert(value, keys[index])
+
     def delete(self, value, key):
         '''
         Deletes the record with the given key from the tree. If deleting that key from the leaf
