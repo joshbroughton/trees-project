@@ -25,12 +25,43 @@ class BPlusTree:
         Build a string representation of the tree using a breadth first traversal
         '''
         result = ''
-        node = self.start
+        node = self.root
         while node is not None:
             result += str(node) + ' -> '
             node = node.next
 
         return result
+
+    def to_json(self):
+        '''
+        Build a json representation of the tree using a breadth first traversal. The output format is:
+        {
+            "0": [root_values],
+            "1": [[second_level_values]],
+            "2": [[third_level_values]],
+            ...
+            "n": [[leaf_values]]
+            }
+        '''
+        result = {
+            '0': self.root.values()
+        }
+        nodes = [self.root]
+        level = 1
+        while not isinstance(nodes[0], LeafNode):
+            level_values = []
+            next_nodes = []
+            for node in nodes:
+                for child in node.children:
+                    level_values.append(child.values())
+                    next_nodes.append(child)
+            result[str(level)] = level_values
+            level += 1
+            nodes = next_nodes
+
+        return result
+
+
 
     def insert(self, value, key):
         '''

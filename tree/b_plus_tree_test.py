@@ -133,6 +133,26 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(tree.root.children[2].children[0].data, {'jimmy': [7]})
         self.assertEqual(tree.root.children[2].children[1].data, {'joe': [3], 'rick': [8]})
 
+    def test_to_json_returns_an_accurate_representation_of_a_tree(self):
+        '''
+        Test that the to_json method returns an accurate representation of the tree
+        '''
+        tree = BPlusTree(1, 1, 'jim')
+        tree.insert('bob', 2)
+        tree.insert('joe', 3)
+        tree.insert('jill', 4)
+        tree.insert('jane', 5)
+        tree.insert('jackie', 6)
+        tree.insert('jimmy', 7)
+        tree.insert('rick', 8)
+        result = tree.to_json()
+        print(result)
+        self.assertEqual(result, {
+            '0': ['jackie', 'jim'],
+            '1': [['bob'], ['jill'], ['jimmy']],
+            '2': [['bob'], ['jackie'], ['jane', 'jill'], ['jim'], ['jimmy'], ['joe', 'rick']]
+        })
+
     def test_delete_value_no_underflow(self):
         '''
         Test deleting a value from the tree that doesn't cause an underflow
@@ -219,9 +239,11 @@ class BPlusTreeTest(unittest.TestCase):
 
     def test_delete_value_with_underflow_merge_then_transfer(self):
         '''
-        Test deleting a value from the tree that causes and underflow and merge right, then a transfer of a leaf
+        Test deleting a value from the tree that causes an underflow and merge right, then a transfer of a leaf
         node from the right sibling of the parent
         '''
         tree = BPlusTree(2, 10, 10)
         tree.insert_many([20, 30, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
         tree.delete(50, 50)
+
+
