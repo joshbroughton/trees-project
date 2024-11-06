@@ -11,6 +11,9 @@ class InnerNode:
     def values(self):
         return self.list_values
 
+    def can_transfer(self):
+        return len(self.values()) > self.order
+
     def get_child(self, target_value):
         for index, value in enumerate(self.list_values):
             if target_value <= value:
@@ -109,4 +112,28 @@ class InnerNode:
             right_sibling.merge_node(child)
             self.list_values.pop(index)
             self.children.pop(index)
+        # after we merge, we need to make sure the parent node (ie self) is balanced
+        # this is similarly solved either by transferring or merging
+
+    def left_sibling(self):
+        '''
+        Get the left sibling of this inner node
+        '''
+        return self.parent.children[self.parent.children.index(self) - 1] if self.parent.children.index(self) > 0 else None
+
+    def right_sibling(self):
+        '''
+        Get the right sibling of this inner node
+        '''
+        return self.parent.children[self.parent.children.index(self) + 1] if self.parent.children.index(self) < len(self.parent.children) - 1 else None
+
+    def balance_self(self):
+        '''
+        Balance this node if it is in an underflow state
+        '''
+        # Check if either sibling can transfer
+
+
+
+
 

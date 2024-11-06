@@ -61,8 +61,6 @@ class BPlusTree:
 
         return result
 
-
-
     def insert(self, value, key):
         '''
         Insert a new index key into the tree. Searches for a space in an existing

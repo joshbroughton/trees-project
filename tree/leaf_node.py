@@ -35,11 +35,11 @@ class LeafNode:
 
     def right_value(self):
         value = self.values()[-1]
-        return (value, self.data[f'{value}'])
+        return (value, self.data[value])
 
     def left_value(self):
         value = self.values()[0]
-        return (value, self.data[f'{value}'])
+        return (value, self.data[value])
 
     def add_leaf_entry(self, value, keys):
         '''
@@ -81,7 +81,7 @@ class LeafNode:
         1. Basic case - we delete the value from the leaf, and the node still has enough values
         2. Underflow #1 - after deleting the node has too few values, but a sibling transfer rebalances
         3. Underflow #2 - after deleting the node has too few values, and a leaf node merge is needed
-        4. Underflow #3 - after a leaf merge, the tree still isn't balanced and a transfer is needed
+        4. Underflow #3 - after a leaf merge, the tree still isn't balanced and an inner node transfer is needed
         5. Underflow #4 - after a leaf merge, the tree still isn't balanced and an inner node merge is needed
         Using https://www.cs.emory.edu/~cheung/Courses/554/Syllabus/3-index/B-tree=delete3.html as a reference
         '''

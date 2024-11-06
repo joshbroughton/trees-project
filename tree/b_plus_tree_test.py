@@ -146,7 +146,6 @@ class BPlusTreeTest(unittest.TestCase):
         tree.insert('jimmy', 7)
         tree.insert('rick', 8)
         result = tree.to_json()
-        print(result)
         self.assertEqual(result, {
             '0': ['jackie', 'jim'],
             '1': [['bob'], ['jill'], ['jimmy']],
@@ -237,6 +236,19 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(tree.root.children[0].data, {'jane': [5], 'jill': [4], 'jim': [1]})
         self.assertEqual(tree.root.children[1].data, {'joe': [3], 'rick': [7], 'rob': [6]})
 
+    def test_sibling_methods_inner_node(self):
+        '''
+        Test getting the left sibling node of an inner node
+        '''
+        tree = BPlusTree(2, 10, 10)
+        tree.insert_many([20, 30, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
+        self.assertEqual(tree.root.values(), [70])
+        self.assertEqual(tree.root.children[0].left_sibling(), None)
+        self.assertEqual(tree.root.children[1].left_sibling(), tree.root.children[0])
+        self.assertEqual(tree.root.children[1].right_sibling(), None)
+        self.assertEqual(tree.root.children[0].right_sibling(), tree.root.children[1])
+
+
     def test_delete_value_with_underflow_merge_then_transfer(self):
         '''
         Test deleting a value from the tree that causes an underflow and merge right, then a transfer of a leaf
@@ -245,5 +257,15 @@ class BPlusTreeTest(unittest.TestCase):
         tree = BPlusTree(2, 10, 10)
         tree.insert_many([20, 30, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
         tree.delete(50, 50)
+        tree.delete(70, 70)
+        tree.delete(60, 60)
+        self.assertEqual(tree.root.values(), [90])
+        self.assertEqual(tree.root.children[0].values(), [70])
+        self.assertEqual(tree.root.children[1].values(), [110, 130])
+        self.assertEqual(tree.root.children[0].children[0].data, {10: [10], 20: [20], 30: [30]})
+        self.assertEqual(tree.root.children[0].children[1].data, {80: [80], 90: [90]})
+        self.assertEqual(tree.root.children[1].children[0].data, {100: [100], 110: [110]})
+
+
 
 
