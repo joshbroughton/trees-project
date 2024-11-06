@@ -114,24 +114,60 @@ class InnerNode:
             self.children.pop(index)
         # after we merge, we need to make sure the parent node (ie self) is balanced
         # this is similarly solved either by transferring or merging
+        if len(self.list_values) < self.order:
+            self.balance_self()
 
     def left_sibling(self):
         '''
         Get the left sibling of this inner node
+        All these left/right methods could be polymorphic
         '''
-        return self.parent.children[self.parent.children.index(self) - 1] if self.parent.children.index(self) > 0 else None
+        left_sibling = None
+        if self.parent and self.parent.children.index(self) > 0:
+            left_sibling = self.parent.children[self.parent.children.index(self) - 1]
+        return left_sibling
 
     def right_sibling(self):
         '''
         Get the right sibling of this inner node
         '''
-        return self.parent.children[self.parent.children.index(self) + 1] if self.parent.children.index(self) < len(self.parent.children) - 1 else None
+        right_sibling = None
+        if self.parent and self.parent.children.index(self) < len(self.parent.children) - 1:
+            right_sibling = self.parent.children[self.parent.children.index(self) + 1]
+        return right_sibling
 
     def balance_self(self):
         '''
         Balance this node if it is in an underflow state
         '''
-        # Check if either sibling can transfer
+        # Check if either sibling can transfer, if they can't, mnerge
+        if self.left_sibling() and self.left_sibling().can_transfer():
+            self.left_sibling().transfer_right()
+        elif self.right_sibling() and self.right_sibling().can_transfer():
+            self.right_sibling().transfer_left()
+
+    def transfer_right(self):
+        '''
+        Transfer a value from this node to its right sibling
+        '''
+        right_sibling = self.right_sibling()
+        value = self.list_values.pop(-1)
+        child_node = self.children.pop(-1)
+        self.parent.add_value(value)
+        right_sibling.add_value(self.parent.values().pop(-1))
+        right_sibling.add_child(child_node)
+
+    def transfer_left(self):
+        '''
+        Transfer a value from this node to its left sibling
+        '''
+        left_sibling = self.left_sibling()
+        value = self.list_values.pop(0)
+        child_node = self.children.pop(0)
+        self.parent.add_value(value)
+        left_sibling.add_value(self.parent.values().pop(0))
+        left_sibling.add_child(child_node)
+
 
 
 

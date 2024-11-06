@@ -249,7 +249,7 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(tree.root.children[0].right_sibling(), tree.root.children[1])
 
 
-    def test_delete_value_with_underflow_merge_then_transfer(self):
+    def test_delete_value_with_underflow_merge_then_inner_node_transfer(self):
         '''
         Test deleting a value from the tree that causes an underflow and merge right, then a transfer of a leaf
         node from the right sibling of the parent
