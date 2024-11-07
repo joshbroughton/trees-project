@@ -112,7 +112,7 @@ class LeafNode:
         new_node = LeafNode(self.order, data2, self.tree, self.parent, self.next)
         self.next = new_node
         if self.parent is None:
-            self.parent = InnerNode(self.order, [self.values()[-1]])
+            self.parent = InnerNode(self.order, [self.values()[-1]], self.tree)
             new_node.parent = self.parent
             self.parent.add_child(self)
             self.parent.add_child(new_node)

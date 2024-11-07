@@ -1,12 +1,13 @@
 #!python3
 
 class InnerNode:
-    def __init__(self, order, values, parent=None):
+    def __init__(self, order, values, tree, parent=None):
         self.length = order * 2
         self.parent = parent
         self.list_values = values # these stay sorted
         self.children = []
         self.order = order
+        self.tree = tree
 
     def values(self):
         return self.list_values
@@ -62,10 +63,10 @@ class InnerNode:
         middle_value = self.list_values.pop(divider)
 
         if self.parent is None:
-            self.parent = InnerNode(self.order, [])
+            self.parent = InnerNode(self.order, [], self.tree)
             self.parent.add_child(self)
 
-        new_node = InnerNode(self.order, self.list_values[divider:], self.parent)
+        new_node = InnerNode(self.order, self.list_values[divider:], self.tree, self.parent)
         self.list_values = self.list_values[:(divider)]
 
         new_node.children = self.children[(divider+1):]
@@ -138,13 +139,57 @@ class InnerNode:
 
     def balance_self(self):
         '''
-        Balance this node if it is in an underflow state
+        Balance this node by transferring or merging if no siblings can transfer
         '''
         # Check if either sibling can transfer, if they can't, mnerge
         if self.left_sibling() and self.left_sibling().can_transfer():
             self.left_sibling().transfer_right()
         elif self.right_sibling() and self.right_sibling().can_transfer():
             self.right_sibling().transfer_left()
+        elif self.left_sibling():
+            self.merge_nodes(self.left_sibling())
+        elif self.right_sibling():
+            self.merge_right(self.right_sibling())
+        # if this node is in underflow and has no siblings, it becomes the root
+        else:
+            self.parent = None
+            self.tree.make_root(self)
+
+    def merge_right(self, sibling):
+        '''
+        Merge this node with the right sibling
+        '''
+        for value in self.list_values:
+            sibling.add_value(value)
+        for child in self.children:
+            sibling.add_child(child)
+            child.parent = sibling
+
+        pointer_index = self.parent.children.index(self)
+        self.parent.values()[pointer_index] = self.children[0].values()[0]
+        if len(self.parent.values()) > 1:
+            self.parent.values().pop(pointer_index - 1)
+
+        self.parent.children.remove(self)
+        self.parent.balance_self()
+
+    def merge_left(self, sibling):
+        '''
+        Merge this node with the left sibling
+        '''
+        for value in self.list_values:
+            sibling.add_value(value)
+        for child in self.children:
+            sibling.add_child(child)
+            child.parent = sibling
+
+        pointer_index = self.parent.children.index(self)
+        self.parent.values()[pointer_index - 1] = sibling.children[-1].values()[-1]
+        if len(self.parent.values()) > 1:
+            self.parent.values().pop(pointer_index)
+
+        self.parent.children.remove(self)
+        self.parent.balance_self()
 
     def transfer_right(self):
         '''
