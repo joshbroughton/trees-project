@@ -146,10 +146,11 @@ class BPlusTreeTest(unittest.TestCase):
         tree.insert('jimmy', 7)
         tree.insert('rick', 8)
         result = tree.to_json()
+        print(tree.root.children)
         self.assertEqual(result, {
-            '0': ['jackie', 'jim'],
-            '1': [['bob'], ['jill'], ['jimmy']],
-            '2': [['bob'], ['jackie'], ['jane', 'jill'], ['jim'], ['jimmy'], ['joe', 'rick']]
+            '0': [[['jackie', 'jim']]],
+            '1': [[['bob'], ['jill'], ['jimmy']]],
+            '2': [[['bob'], ['jackie']], [['jane', 'jill'], ['jim']], [['jimmy'], ['joe', 'rick']]]
         })
 
     def test_delete_value_no_underflow(self):

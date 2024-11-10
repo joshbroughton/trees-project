@@ -1,0 +1,72 @@
+<div class="tree">
+    {% for level, nodes_at_level in tree.items() %}
+        <div class="tree-level">
+            <p class="level-label">Level {{ level }}</p>
+            <div class="node-group">
+                {% for nodes in nodes_at_level %}
+                    <div class="node-set">
+                        {% for node in nodes %}
+                            <div class="node">
+                                {% for value in node %}
+                                    <span class="node-value">{{ value }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<style>
+    .tree {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .tree-level {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    .level-label {
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .node-group {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        position: relative;
+    }
+
+    .node-set {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .node {
+        display: flex;
+        gap: 5px;
+        padding: 8px;
+        border: 2px solid #333;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .node-value {
+        padding: 5px;
+        background-color: #ddd;
+        border-radius: 3px;
+    }
+</style>
+

@@ -44,7 +44,7 @@ class BPlusTree:
             }
         '''
         result = {
-            '0': self.root.values()
+            '0': [[self.root.values()]]
         }
         nodes = [self.root]
         level = 1
@@ -52,9 +52,11 @@ class BPlusTree:
             level_values = []
             next_nodes = []
             for node in nodes:
+                node_values = []
                 for child in node.children:
-                    level_values.append(child.values())
+                    node_values.append(child.values())
                     next_nodes.append(child)
+                level_values.append(node_values)
             result[str(level)] = level_values
             level += 1
             nodes = next_nodes
