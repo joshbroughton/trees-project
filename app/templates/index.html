@@ -57,7 +57,7 @@
             border: 1px solid #ccc;
         }
 
-        .console button {
+        .green-button {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
@@ -68,7 +68,7 @@
             cursor: pointer;
         }
 
-        .console button:hover {
+        .green-button:hover {
             background-color: #45a049;
         }
 
@@ -77,6 +77,20 @@
             color: #f44336;
             border-radius: 5px;
             margin-top: 10px;
+        }
+
+        .red-button {
+            background-color: red;
+            width: 100%;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .red-button:hover {
+            background-color: darkred;
         }
 
     </style>
@@ -99,11 +113,24 @@
             </div>
         {% endif %}
     {% endwith %}
+    <div class="query-result">
+        {% if query_result %}
+        <h2>Query Result</h2>
+            <p>{{ query_result }}</p>
+        {% endif %}
+    </div>
     <div class="console">
         <form action="/update_tree" method="post">
             <label for="commandInput">Enter command to modify the tree:</label>
             <input type="text" id="commandInput" name="command" placeholder="e.g., insert 40, delete 20" />
-            <button type="submit">Submit Command</button>
+
+            <label for="treeOrder">Select Tree Order: (delete your tree to change this)</label>
+            <input type="number" id="treeOrder" name="order" min="1" value="{{order}}" required />
+
+            <button class="green-button" type="submit">Submit Command</button>
+        </form>
+        <form action="/reset_tree" method="post" style="margin-top: 10px;">
+            <button type="submit" class="red-button" onclick="return confirm('Are you sure you want to reset the tree?')">Reset Tree</button>
         </form>
     </div>
     <div>
@@ -111,8 +138,11 @@
         <ul>
             <li>insert &lt;value&gt;: Insert a key into the tree</li>
             <li>delete &lt;value&gt;: Delete a key from the tree</li>
-            <li>select where value = &lt;query&gt;</li>
-            <li>select where value (&lt;||&gt;) &lt;query&gt; (range search)</li>
+            <li>select = &lt;query&gt; (Select for equal value)</li>
+            <li>select between &lt;query&gt; and &lt;query&gt; (range search)</li>
+            <li>Select queries return the primary keys for records that match the query; I didn't wire in a fake database,
+                but in a B+ tree the leaf nodes contain pointers (primary keys) to the actual records.
+            </li>
         </ul>
     </div>
 </body>

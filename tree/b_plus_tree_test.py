@@ -276,23 +276,5 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertIsInstance(tree.root, LeafNode)
         self.assertEqual(tree.root.data, {30: [2]})
 
-    # def test_delete_value_with_underflow_merge_then_inner_node_merge(self):
-    #     '''
-    #     Test deleting a value from the tree that causes an underflow and merge right, then a merge of the inner
-    #     nodes
-    #     '''
-    #     tree = BPlusTree(2, 10, 10)
-    #     tree.insert_many([20, 30, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
-    #     print(tree.to_json())
-    #     tree.delete(50, 50)
-    #     print(tree.to_json())
-    #     print(tree.root.children[0].children)
-    #     tree.delete(70, 70)
-    #     print(tree.to_json())
-    #     print(tree.root.children[0].children)
-    #     tree.delete(60, 60)
-    #     print(tree.to_json())
-    #     print(tree.root.children[0].children)
-
 if __name__ == "__main__":
      unittest.main()

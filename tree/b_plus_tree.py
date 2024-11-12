@@ -102,17 +102,31 @@ class BPlusTree:
         else:
             return None
 
-    def search(self, key):
+    def search(self, value):
         '''
         Returns the record for the given key
         Like doing SELECT * FROM table WHERE key=key
         '''
+        search_result = self._search_value(value, self.root)
+        if search_result is not None:
+            return search_result.data[value]
+        else:
+            return None
 
-    def range_search(self, start_key, end_key):
+    def search_range(self, start_value, end_value):
         '''
         Search for and return all records within a given key range (include)
         Like doing SELECT * FROM table WHERE key BETWEEN start_key AND end_key
         '''
+        search_result = self._search_value(start_value, self.root)
+        results = []
+        while search_result is not None and start_value <= end_value:
+            if start_value in search_result.data:
+                results.extend(search_result.data[start_value])
+            start_value += 1
+            if start_value not in search_result.values():
+                search_result = search_result.next
+        return results
 
     def make_root(self, node):
         '''
