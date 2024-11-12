@@ -27,14 +27,6 @@ class BPlusTreeTest(unittest.TestCase):
         tree.insert('bob', 2)
         self.assertEqual(tree.root.data,{'jim': [1], 'bob': [2]})
 
-    def test_another_insert(self):
-        tree = BPlusTree(1, 1, 10)
-        tree.insert(20, 2)
-        tree.insert(30, 3)
-        tree.insert(5, 4)
-        print(tree.to_json())
-        self.assertEqual(tree.root.values(), [10, 20])
-
     def test_create_and_insert_higher_order(self):
         '''
         Test creating a tree with a higher order and building it up
@@ -157,7 +149,7 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(result, {
             '0': [[['jackie', 'jim']]],
             '1': [[['bob'], ['jill'], ['jimmy']]],
-            '2': [[{'bob': [2]}, {'jackie': [6]}], [{'jane': [5], 'jill': [4]}, {'jim': [1]}], [{'jimmy': [7]}, {'joe': [3], 'rick': [8]}]]
+            '2': [[['bob'], ['jackie']], [['jane', 'jill'], ['jim']], [['jimmy'], ['joe', 'rick']]]
         })
 
     def test_delete_value_no_underflow(self):
@@ -167,7 +159,7 @@ class BPlusTreeTest(unittest.TestCase):
         tree = BPlusTree(1, 1, 'jim')
         tree.insert('bob', 2)
         tree.insert('joe', 3)
-        tree.delete('joe', 3)
+        tree.delete('joe')
         self.assertEqual(tree.root.values(), ['bob'])
         self.assertEqual(tree.root.children[0].data, {'bob': [2]})
         self.assertEqual(tree.root.children[1].data, {'jim': [1]})
@@ -181,7 +173,7 @@ class BPlusTreeTest(unittest.TestCase):
         tree.insert('joe', 3)
         tree.insert('abe', 4)
         tree.insert('jill', 5)
-        tree.delete('jill', 5)
+        tree.delete('jill')
         # the pointer values just need to point correctly, its okay if they contain deleted values
         self.assertEqual(tree.root.values(), ['abe', 'jill'])
         self.assertEqual(tree.root.children[0].data, {'abe': [4]})
@@ -196,7 +188,7 @@ class BPlusTreeTest(unittest.TestCase):
         tree.insert('bob', 2)
         tree.insert('joe', 3)
         tree.insert('jill', 5)
-        tree.delete('jill', 5)
+        tree.delete('jill')
         self.assertEqual(tree.root.values(), ['bob', 'jim'])
         self.assertEqual(tree.root.children[0].data, {'bob': [2]})
         self.assertEqual(tree.root.children[1].data, {'jim': [1]})
@@ -217,8 +209,8 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(tree.root.children[0].data, {'bob': [2], 'jane': [5]})
         self.assertEqual(tree.root.children[1].data, {'jill': [4], 'jim': [1]})
         self.assertEqual(tree.root.children[2].data, {'joe': [3], 'rick': [7], 'rob': [6]})
-        tree.delete('rob', 6)
-        tree.delete('jim', 1)
+        tree.delete('rob')
+        tree.delete('jim')
         self.assertEqual(tree.root.values(), ['jim'])
         self.assertEqual(tree.root.children[0].data, {'bob': [2], 'jane': [5], 'jill': [4]})
         self.assertEqual(tree.root.children[1].data, {'joe': [3], 'rick': [7]})
@@ -239,7 +231,7 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(tree.root.children[0].data, {'bob': [2], 'jane': [5]})
         self.assertEqual(tree.root.children[1].data, {'jill': [4], 'jim': [1]})
         self.assertEqual(tree.root.children[2].data, {'joe': [3], 'rick': [7], 'rob': [6]})
-        tree.delete('bob', 2)
+        tree.delete('bob')
         self.assertEqual(tree.root.values(), ['jim'])
         self.assertEqual(tree.root.children[0].data, {'jane': [5], 'jill': [4], 'jim': [1]})
         self.assertEqual(tree.root.children[1].data, {'joe': [3], 'rick': [7], 'rob': [6]})
@@ -264,13 +256,25 @@ class BPlusTreeTest(unittest.TestCase):
         '''
         tree = BPlusTree(2, 10, 10)
         tree.insert_many([20, 30, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
-        tree.delete(50, 50)
+        tree.delete(50)
         self.assertEqual(tree.root.values(), [90])
         self.assertEqual(tree.root.children[0].values(), [50, 70])
         self.assertEqual(tree.root.children[1].values(), [110, 130])
         self.assertEqual(tree.root.children[0].children[0].data, {10: [10], 20: [20], 30: [30]})
         self.assertEqual(tree.root.children[0].children[1].data, {60: [60], 70: [70]})
         self.assertEqual(tree.root.children[1].children[0].data, {100: [100], 110: [110]})
+
+    def test_delete_makes_single_node_the_root(self):
+        '''
+        When only one leaf node is left, it should be made the root node
+        '''
+        tree = BPlusTree(1, 0, 10)
+        tree.insert(20, 1)
+        tree.insert(30, 2)
+        tree.delete(20)
+        tree.delete(10)
+        self.assertIsInstance(tree.root, LeafNode)
+        self.assertEqual(tree.root.data, {30: [2]})
 
     # def test_delete_value_with_underflow_merge_then_inner_node_merge(self):
     #     '''

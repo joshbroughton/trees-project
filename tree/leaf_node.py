@@ -88,6 +88,8 @@ class LeafNode:
         if value in self.data:
             del self.data[value]
         # node is not in an underflow state
+        print("deleting value: ", value)
+        print("values: ", self.values())
         if len(self.values()) >= self.order:
             return
         # node is in an underflow state

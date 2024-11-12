@@ -82,10 +82,6 @@ class InnerNode:
         Balance a child node that is in an underflow state
         '''
         children_length = len(self.children)
-        # if this is the only child what do we do?
-        if children_length == 1:
-            #something?
-            return
 
         # get the siblings
         index = self.children.index(child)
@@ -113,6 +109,12 @@ class InnerNode:
             right_sibling.merge_node(child)
             self.list_values.pop(index)
             self.children.pop(index)
+
+        if len(self.children) == 1:
+            self.tree.make_root(self.children[0])
+            self.children[0].parent = None
+            return
+
         # after we merge, we need to make sure the parent node (ie self) is balanced
         # this is similarly solved either by transferring or merging
         if len(self.list_values) < self.order:
