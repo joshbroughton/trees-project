@@ -4,6 +4,11 @@
             <p class="level-label">Level {{ level }}</p>
             <div class="node-group">
                 {% for nodes in nodes_at_level %}
+                    {% if loop.index0 != 0 and loop.index0 != nodes_at_level|length %}
+                        <div class="divider">
+                            |
+                        </div>
+                    {% endif %}
                     <div class="node-set">
                         {% for node in nodes %}
                             <div class="node">
