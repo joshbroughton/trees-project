@@ -72,6 +72,13 @@
             background-color: #45a049;
         }
 
+        .error-banner {
+            padding: 10px;
+            color: #f44336;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -79,12 +86,34 @@
     <div class="tree-view" id="treeView">
         {% include 'tree.html' %}
     </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        <div class="error-banner">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
     <div class="console">
         <form action="/update_tree" method="post">
             <label for="commandInput">Enter command to modify the tree:</label>
             <input type="text" id="commandInput" name="command" placeholder="e.g., insert 40, delete 20" />
             <button type="submit">Submit Command</button>
         </form>
+    </div>
+    <div>
+        <p>Commands:</p>
+        <ul>
+            <li>insert &lt;value&gt;: Insert a key into the tree</li>
+            <li>delete &lt;value&gt;: Delete a key from the tree</li>
+            <li>select where value = &lt;query&gt;</li>
+            <li>select where value (&lt;||&gt;) &lt;query&gt; (range search)</li>
+        </ul>
     </div>
 </body>
 </html>

@@ -1,5 +1,6 @@
 <div class="tree">
-    {% for level, nodes_at_level in tree.items() %}
+    {% for level, nodes_at_level in tree_json.items() %}
+        {% set last_level_index = nodes_at_level|length - 1 %}
         <div class="tree-level">
             <p class="level-label">Level {{ level }}</p>
             <div class="node-group">
@@ -12,9 +13,18 @@
                     <div class="node-set">
                         {% for node in nodes %}
                             <div class="node">
-                                {% for value in node %}
-                                    <span class="node-value">{{ value }}</span>
-                                {% endfor %}
+                                {% if level == last_level_index %}
+                                    {% for name, values in node.items() %}
+                                        <span class="node-key">{{ name }}</span>:
+                                        <span class="node-values">
+                                            {{ values | join(', ') }}
+                                        </span>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for value in node %}
+                                        <span class="node-value">{{ value }}</span>
+                                    {% endfor %}
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div>

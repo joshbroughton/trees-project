@@ -1,6 +1,6 @@
 #!python3
 
-from inner_node import InnerNode
+from tree.inner_node import InnerNode
 
 class LeafNode:
     '''
@@ -74,7 +74,7 @@ class LeafNode:
         if self.is_full():
             self.split_node()
 
-    def delete_value(self, value, key):
+    def delete_value(self, value):
         '''
         Delete a value from the leaf node.
         Cases:
@@ -86,15 +86,14 @@ class LeafNode:
         Using https://www.cs.emory.edu/~cheung/Courses/554/Syllabus/3-index/B-tree=delete3.html as a reference
         '''
         if value in self.data:
-            self.data[value].remove(key)
-            if len(self.data[value]) == 0:
-                del self.data[value]
+            del self.data[value]
         # node is not in an underflow state
         if len(self.values()) >= self.order:
             return
         # node is in an underflow state
         # delegate rebalancing up to the inner node, as it has the knowledge of the siblings and its own pointers
-        self.parent.balance_child(self)
+        if self.parent is not None:
+            self.parent.balance_child(self)
 
 
     def split_node(self):

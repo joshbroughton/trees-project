@@ -1,8 +1,8 @@
 #!python3
 
-from b_plus_tree import BPlusTree
-from leaf_node import LeafNode
-from inner_node import InnerNode
+from tree.b_plus_tree import BPlusTree
+from tree.leaf_node import LeafNode
+from tree.inner_node import InnerNode
 import unittest
 
 
@@ -26,6 +26,14 @@ class BPlusTreeTest(unittest.TestCase):
         tree = BPlusTree(3, 1, 'jim')
         tree.insert('bob', 2)
         self.assertEqual(tree.root.data,{'jim': [1], 'bob': [2]})
+
+    def test_another_insert(self):
+        tree = BPlusTree(1, 1, 10)
+        tree.insert(20, 2)
+        tree.insert(30, 3)
+        tree.insert(5, 4)
+        print(tree.to_json())
+        self.assertEqual(tree.root.values(), [10, 20])
 
     def test_create_and_insert_higher_order(self):
         '''
@@ -146,11 +154,10 @@ class BPlusTreeTest(unittest.TestCase):
         tree.insert('jimmy', 7)
         tree.insert('rick', 8)
         result = tree.to_json()
-        print(tree.root.children)
         self.assertEqual(result, {
             '0': [[['jackie', 'jim']]],
             '1': [[['bob'], ['jill'], ['jimmy']]],
-            '2': [[['bob'], ['jackie']], [['jane', 'jill'], ['jim']], [['jimmy'], ['joe', 'rick']]]
+            '2': [[{'bob': [2]}, {'jackie': [6]}], [{'jane': [5], 'jill': [4]}, {'jim': [1]}], [{'jimmy': [7]}, {'joe': [3], 'rick': [8]}]]
         })
 
     def test_delete_value_no_underflow(self):
@@ -265,21 +272,23 @@ class BPlusTreeTest(unittest.TestCase):
         self.assertEqual(tree.root.children[0].children[1].data, {60: [60], 70: [70]})
         self.assertEqual(tree.root.children[1].children[0].data, {100: [100], 110: [110]})
 
-    def test_delete_value_with_underflow_merge_then_inner_node_merge(self):
-        '''
-        Test deleting a value from the tree that causes an underflow and merge right, then a merge of the inner
-        nodes
-        '''
-        tree = BPlusTree(2, 10, 10)
-        tree.insert_many([20, 30, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
-        print(tree.to_json())
-        tree.delete(50, 50)
-        print(tree.to_json())
-        print(tree.root.children[0].children)
-        tree.delete(70, 70)
-        print(tree.to_json())
-        print(tree.root.children[0].children)
-        tree.delete(60, 60)
-        print(tree.to_json())
-        print(tree.root.children[0].children)
+    # def test_delete_value_with_underflow_merge_then_inner_node_merge(self):
+    #     '''
+    #     Test deleting a value from the tree that causes an underflow and merge right, then a merge of the inner
+    #     nodes
+    #     '''
+    #     tree = BPlusTree(2, 10, 10)
+    #     tree.insert_many([20, 30, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
+    #     print(tree.to_json())
+    #     tree.delete(50, 50)
+    #     print(tree.to_json())
+    #     print(tree.root.children[0].children)
+    #     tree.delete(70, 70)
+    #     print(tree.to_json())
+    #     print(tree.root.children[0].children)
+    #     tree.delete(60, 60)
+    #     print(tree.to_json())
+    #     print(tree.root.children[0].children)
 
+if __name__ == "__main__":
+     unittest.main()

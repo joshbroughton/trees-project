@@ -1,7 +1,6 @@
 #!python3
 
-from inner_node import InnerNode
-from leaf_node import LeafNode
+from tree.leaf_node import LeafNode
 
 class BPlusTree:
     '''
@@ -54,8 +53,12 @@ class BPlusTree:
             for node in nodes:
                 node_values = []
                 for child in node.children:
-                    node_values.append(child.values())
-                    next_nodes.append(child)
+                    if isinstance(child, LeafNode):
+                        node_values.append(child.values())
+                        next_nodes.append(child)
+                    else:
+                        node_values.append(child.values())
+                        next_nodes.append(child)
                 level_values.append(node_values)
             result[str(level)] = level_values
             level += 1
@@ -86,7 +89,7 @@ class BPlusTree:
         for index, value in enumerate(values):
             self.insert(value, keys[index])
 
-    def delete(self, value, key):
+    def delete(self, value):
         '''
         Deletes the record with the given key from the tree. If deleting that key from the leaf
         node that contains it makes that node violate the tree rules, rebalance the tree starting from
@@ -94,7 +97,10 @@ class BPlusTree:
         '''
         search_result = self._search_value(value, self.root)
         if search_result is not None:
-            search_result.delete_value(value, key)
+            search_result.delete_value(value)
+            return True
+        else:
+            return None
 
     def search(self, key):
         '''
