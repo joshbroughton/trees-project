@@ -58,7 +58,10 @@ def update_tree():
             if command[1] == '=':
                 query_result = tree.search(command[2])
             elif command[1] == 'between':
-                query_result = tree.search_range(int(command[2]), int(command[4]))
+                if command[2].isdigit():
+                    query_result = tree.search_range(int(command[2]), int(command[4]))
+                else:
+                    query_result = tree.search_range(command[2], command[4])
             if query_result is None:
                 flash('Value not found in tree', 'error')
         case _:

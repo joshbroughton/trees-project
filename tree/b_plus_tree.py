@@ -120,12 +120,20 @@ class BPlusTree:
         '''
         search_result = self._search_value(start_value, self.root)
         results = []
-        while search_result is not None and start_value <= end_value:
-            if start_value in search_result.data:
-                results.extend(search_result.data[start_value])
-            start_value += 1
-            if start_value not in search_result.values():
-                search_result = search_result.next
+        for value in search_result.data.keys():
+            if value >= start_value:
+                results.extend(search_result.data[value])
+        search_result = search_result.next
+
+        while search_result is not None:
+            if end_value in search_result.data:
+                for value in search_result.data.keys():
+                    if value <= end_value:
+                        results.extend(search_result.data[value])
+                break
+            else:
+                results.extend(*search_result.data.values())
+            search_result = search_result.next
         return results
 
     def make_root(self, node):

@@ -110,7 +110,7 @@ class InnerNode:
             self.list_values.pop(index)
             self.children.pop(index)
 
-        if len(self.children) == 1:
+        if len(self.children) == 1 and self.tree.root == self:
             self.tree.make_root(self.children[0])
             self.children[0].parent = None
             return
@@ -149,7 +149,7 @@ class InnerNode:
         elif self.right_sibling() and self.right_sibling().can_transfer():
             self.right_sibling().transfer_left()
         elif self.left_sibling():
-            self.merge_nodes(self.left_sibling())
+            self.merge_left(self.left_sibling())
         elif self.right_sibling():
             self.merge_right(self.right_sibling())
         # if this node is in underflow and has no siblings, it becomes the root
