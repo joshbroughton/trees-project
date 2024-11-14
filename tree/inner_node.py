@@ -214,9 +214,3 @@ class InnerNode:
         self.parent.add_value(value)
         left_sibling.add_value(self.parent.values().pop(0))
         left_sibling.add_child(child_node)
-
-
-
-
-
-
